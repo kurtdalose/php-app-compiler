@@ -1,0 +1,7 @@
+.buildpath
+.project
+.settings/*
+bin/app.phar
+composer.lock
+coverage/*
+src/vendors/*

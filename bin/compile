@@ -1,0 +1,140 @@
+#!/usr/bin/env php
+<?php
+
+    require __DIR__ . '/../src/vendors/autoload.php';
+
+    use Symfony\Component\Finder\Finder;
+
+    $compiler = new Compiler (__DIR__ . '/phpc.phar');
+
+    $compiler->compile();
+
+    /**
+     * Compiles the console application.
+     *
+     * This class will compile the console application and the dependencies
+     * listed in the vendors directory.  The result will be placed in the
+     * bin directory as "app.phar".  Note that all assets found in the
+     * `src/app` directory will be included, while only PHP scripts from
+     * the `src/vendors` will be kept. 
+     *
+     * @author Kevin Herrera <me@kevingh.com>
+     */
+    class Compiler
+    {
+        /**
+         * The PHAR builder.
+         *
+         * @type Phar
+         */
+        private $phar;
+
+        /**
+         * Creates the PHAR builder.
+         *
+         * This method creates the PHAR builder, sets the signature algo,
+         * and begins buffering.  If the PHAR already exists, it will be
+         * deleted.
+         *
+         * @param string $file The PHAR file name.
+         * @param integer $flags The RecursiveDirectoryIterator flags.
+         */
+        public function __construct ($file = null, $flags = 0)
+        {
+            if (null === $file)
+            {
+                $file = __DIR__ . '/app.phar';
+            }
+
+            if (file_exists($file))
+            {
+                unlink($file);
+            }
+
+            $this->phar = new Phar ($file, $flags, 'app.phar');
+
+            $this->phar->setSignatureAlgorithm(Phar::SHA1);
+
+            $this->phar->startBuffering();
+        }
+
+        /**
+         * Compiles the PHAR.
+         *
+         *
+         * This method compiles the PHAR using the files `bin/app`, all the
+         * files in `src/app`, and only the PHP scripts in the `bin/vendors`
+         * directory.
+         */
+        public function compile ()
+        {
+            $files = new Finder;
+
+            $files->files()
+                  ->ignoreVCS(true)
+                  ->in(__DIR__ . '/../src/app');
+
+            foreach ($files as $file)
+            {
+                $this->add($file);
+            }
+
+            $files = new Finder;
+
+            $files->files()
+                  ->ignoreVCS(true)
+                  ->name('*.php')
+                  ->in(__DIR__ . '/../src/vendors');
+
+            foreach ($files as $file)
+            {
+                $this->add($file);
+            }
+
+            $this->phar->addFromString(
+                'bin/app',
+                str_replace(
+                    "#!/usr/bin/env php\n",
+                    '',
+                    file_get_contents(__DIR__ . '/app')
+                )
+            );
+
+            $this->phar->stopBuffering();
+
+            $this->phar->setStub(<<<STUB
+#!/usr/bin/env php
+<?php
+
+    /* This console application was created using console-app.
+     *
+     * http://github.com/kherge/console-app
+     */
+
+    Phar::mapPhar('app.phar');
+
+    require 'phar://app.phar/bin/app';
+
+    __HALT_COMPILER();
+STUB
+);
+        }
+
+        /**
+         * Adds the file to the PHAR.
+         *
+         * This method will add the file to the PHAR.
+         *
+         * @param SplFileInfo $file The file.
+         */
+        private function add (SplFileInfo $file)
+        {
+            $path = str_replace(
+                dirname(__DIR__) . DIRECTORY_SEPARATOR,
+                '',
+                $file->getRealPath()
+            );
+
+            $this->phar->addFile($file->getRealPath(), $path);
+        }
+    }
