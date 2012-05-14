@@ -4,8 +4,7 @@
 
 This console application makes using the PHP bcompiler extension a
 little simpler.  The application itself can be compiled into a PHAR
-executable.  Unfortunately because of a bug in bcompiler, the app
-itself cannot yet compile itself.
+executable.  The application cannot compile itself, yet.
 
 ## Installing
 
