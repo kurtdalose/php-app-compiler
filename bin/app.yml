@@ -1,0 +1,10 @@
+-
+    - files
+    - ignoreVCS: true
+    - name: '*.php'
+    - exclude: Tests
+    - in: ../src/vendors/symfony
+-
+    - files
+    - name: '*.php'
+    - in: ../src/app
