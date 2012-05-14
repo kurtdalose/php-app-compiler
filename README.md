@@ -2,9 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/kherge/php-compiler.png?branch=master)](http://travis-ci.org/kherge/php-compiler)
 
-This console application makes using the PHP bcompiler extension a
-little simpler.  The application itself can be compiled into a PHAR
-executable.  The application cannot compile itself, yet.
+This console application makes using the PHP bcompiler extension a little simpler.  The application itself can be compiled into a PHAR executable.  Due to a [bug in the bcompiler extension][bug], php-compiler cannot compile itself.
 
 ## Installing
 
@@ -89,3 +87,5 @@ YAML equivalent
         - in: /../../vendor/symfony/
         - in: /../../vendor/seld/jsonlint/src/
         - in: /../../vendor/justinrainbow/json-schema/src/
+
+[bug]: https://bugs.php.net/bug.php?id=62031&thanks=6
