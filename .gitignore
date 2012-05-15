@@ -1,8 +1,4 @@
 .buildpath
 .project
 .settings/*
-bin/app.phar
-bin/app.pbc
-composer.lock
-coverage/*
-src/vendors/*
+out.pbc
