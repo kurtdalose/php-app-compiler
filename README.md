@@ -1,91 +1,26 @@
 # PHP Compiler
 
-[![Build Status](https://secure.travis-ci.org/kherge/php-compiler.png?branch=master)](http://travis-ci.org/kherge/php-compiler)
-
-This console application makes using the PHP bcompiler extension a little simpler.  The application itself can be compiled into a PHAR executable.  Due to a [bug in the bcompiler extension][bug], php-compiler cannot compile itself.
-
-## Installing
-
-1. Clone the repository
-
-    $ git clone https://github.com/kherge/php-compiler
-
-2. Build the PHAR application
-
-    $ cd php-compiler
-    $ bin/compile
-
-3. Place the PHAR application in your bin directory and make it executable
-
-    $ mv bin/phpc.phar ~/bin
-    $ cd ~/bin
-    $ chmod 755 phpc.phar
-    $ ln -s phpc.phar phpc
+Compiles one or more PHP source files into a PHP bytecode file using bcompiler.
 
 ## Usage
 
-The help screen
+    Usage: phpc.php LIST [OUTPUT]
 
-    $ phpc help compile
-    Usage:
-     compile [-o|--output="..."] config [stub]
+    Compiles PHP source files using bcompiler.
 
-    Arguments:
-     config        The build configuration file.
-     stub          The build stub file.
+    LIST
+        The file that contains a list of PHP source files to compile together.
+        The list consists of one source file per path.  If relative paths are
+        used, the location of the list file will be used as the starting path.
 
-    Options:
-     --output (-o) The output file name
+    OUTPUT
+        The name of the output file.
 
-- If no output is specified, the file name "p.out" will be used.
-- The build configuration file is a YAML file.
-- The build stub file is what gets executed when your run the output.
+## Notes
 
-## Build Configuration
+The compiler is designed so that you can compile it if you want.
 
-The YAML build configuration file is simply used to determine what
-files needed to be compiled.  The configuration settings are actually
-a series of method calls and their arguments
+    $ echo 'phpc.php' > compile.list
+    $ php phpc.php compile.list phpc.pbc
 
-PHP (borrowed from Composer)
-
-    $finder = new Symfony\Component\Finder\Finder;
-
-    $finder->files()
-           ->ignoreVCS(true)
-           ->name('*.php')
-           ->notName('Compiler.php')
-           ->notName('ClassLoader.php')
-           ->in(__DIR__.'/..');
-
-    // add files to $files
-
-    $finder = new Symfony\Component\Finder\Finder;
-
-    $finder->files()
-           ->ignoreVCS(true)
-           ->name('*.php')
-           ->exclude('Tests')
-           ->in(__DIR__.'/../../vendor/symfony/')
-           ->in(__DIR__.'/../../vendor/seld/jsonlint/src/')
-           ->in(__DIR__.'/../../vendor/justinrainbow/json-schema/src/')
-
-YAML equivalent
-
-    -
-        - files
-        - ignoreVCS: true
-        - name: '*.php'
-        - notName: Compiler.php
-        - notName: ClassLoader.php
-        - in: '/..'
-    -
-        - files
-        - ignoreVCS: true
-        - name: '*.php'
-        - exclude: Tests
-        - in: /../../vendor/symfony/
-        - in: /../../vendor/seld/jsonlint/src/
-        - in: /../../vendor/justinrainbow/json-schema/src/
-
-[bug]: https://bugs.php.net/bug.php?id=62031&thanks=6
+And now you have a bytecode version of the compiler.
